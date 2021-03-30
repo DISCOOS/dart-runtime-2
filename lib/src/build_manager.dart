@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:analyzer/dart/ast/ast.dart';
-import 'package:isolate_executor/isolate_executor.dart';
+import 'package:isolate_executor_2/isolate_executor_2.dart';
 import 'package:runtime/runtime.dart';
 
 import 'build_context.dart';
@@ -36,9 +36,7 @@ class BuildManager {
     // Here is where we need to provide a temporary copy of the script file with the main function stripped;
     // this is because when the RuntimeGenerator loads, it needs Mirror access to any declarations in this file
     var scriptSource = context.source;
-    final strippedScriptFile =
-        File.fromUri(context.targetScriptFileUri)
-          ..writeAsStringSync(scriptSource);
+    final strippedScriptFile = File.fromUri(context.targetScriptFileUri)..writeAsStringSync(scriptSource);
 
     final analyzer = CodeAnalyzer(strippedScriptFile.absolute.uri);
     final analyzerContext = analyzer.contexts.contextFor(analyzer.path);
@@ -58,10 +56,7 @@ class BuildManager {
 
     await IsolateExecutor.run(BuildExecutable(context.safeMap),
         packageConfigURI: sourceDirectoryUri.resolve(".packages"),
-        imports: [
-          "package:runtime/runtime.dart",
-          context.targetScriptFileUri.toString()
-        ],
+        imports: ["package:runtime/runtime.dart", context.targetScriptFileUri.toString()],
         logHandler: (s) => print(s));
   }
 
