@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:mirrors';
 
+import 'package:path/path.dart' as path;
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:runtime/src/analyzer.dart';
@@ -11,19 +12,14 @@ import 'package:yaml/yaml.dart';
 
 /// Configuration and context values used during [Build.execute].
 class BuildContext {
-  BuildContext(this.rootLibraryFileUri, this.buildDirectoryUri,
-      this.executableUri, this.source,
-      {bool forTests})
+  BuildContext(this.rootLibraryFileUri, this.buildDirectoryUri, this.executableUri, this.source, {bool forTests})
       : this.forTests = forTests ?? false {
     analyzer = CodeAnalyzer(sourceApplicationDirectory.uri);
   }
 
   factory BuildContext.fromMap(Map map) {
-    return BuildContext(
-        Uri.parse(map['rootLibraryFileUri']),
-        Uri.parse(map['buildDirectoryUri']),
-        Uri.parse(map['executableUri']),
-        map['source'],
+    return BuildContext(Uri.parse(map['rootLibraryFileUri']), Uri.parse(map['buildDirectoryUri']),
+        Uri.parse(map['executableUri']), map['source'],
         forTests: map['forTests']);
   }
 
@@ -56,22 +52,17 @@ class BuildContext {
   MirrorContext get context => RuntimeContext.current as MirrorContext;
 
   Uri get targetScriptFileUri => forTests
-      ? getDirectory(buildDirectoryUri.resolve("test/"))
-          .uri
-          .resolve("main_test.dart")
+      ? getDirectory(buildDirectoryUri.resolve("test/")).uri.resolve("main_test.dart")
       : buildDirectoryUri.resolve("main.dart");
 
-  Pubspec get sourceApplicationPubspec => Pubspec.parse(
-      File.fromUri(sourceApplicationDirectory.uri.resolve("pubspec.yaml"))
-          .readAsStringSync());
+  Pubspec get sourceApplicationPubspec =>
+      Pubspec.parse(File.fromUri(sourceApplicationDirectory.uri.resolve("pubspec.yaml")).readAsStringSync());
 
-  Map<dynamic, dynamic> get sourceApplicationPubspecMap => loadYaml(
-      File.fromUri(sourceApplicationDirectory.uri.resolve("pubspec.yaml"))
-          .readAsStringSync());
+  Map<dynamic, dynamic> get sourceApplicationPubspecMap =>
+      loadYaml(File.fromUri(sourceApplicationDirectory.uri.resolve("pubspec.yaml")).readAsStringSync());
 
   /// The directory of the application being compiled.
-  Directory get sourceApplicationDirectory =>
-      getDirectory(rootLibraryFileUri.resolve("../"));
+  Directory get sourceApplicationDirectory => getDirectory(rootLibraryFileUri.resolve("../"));
 
   /// The library file of the application being compiled.
   File get sourceLibraryFile => getFile(rootLibraryFileUri);
@@ -80,21 +71,18 @@ class BuildContext {
   Directory get buildDirectory => getDirectory(buildDirectoryUri);
 
   /// The generated runtime directory
-  Directory get buildRuntimeDirectory =>
-      getDirectory(buildDirectoryUri.resolve("generated_runtime/"));
+  Directory get buildRuntimeDirectory => getDirectory(buildDirectoryUri.resolve("generated_runtime/"));
 
   /// Directory for compiled packages
-  Directory get buildPackagesDirectory =>
-      getDirectory(buildDirectoryUri.resolve("packages/"));
+  Directory get buildPackagesDirectory => getDirectory(buildDirectoryUri.resolve("packages/"));
 
   /// Directory for compiled application
-  Directory get buildApplicationDirectory => getDirectory(
-      buildPackagesDirectory.uri.resolve("${sourceApplicationPubspec.name}/"));
+  Directory get buildApplicationDirectory =>
+      getDirectory(buildPackagesDirectory.uri.resolve("${sourceApplicationPubspec.name}/"));
 
   /// Gets dependency package location relative to [sourceApplicationDirectory].
   Map<String, Uri> get resolvedPackages {
-    return getResolvedPackageUris(
-        sourceApplicationDirectory.uri.resolve(".packages"),
+    return getResolvedPackageUris(sourceApplicationDirectory.uri.resolve(".packages"),
         relativeTo: sourceApplicationDirectory.uri);
   }
 
@@ -136,21 +124,22 @@ class BuildContext {
     return outputUri;
   }
 
-  List<String> getImportDirectives(
-      {Uri uri, String source, bool alsoImportOriginalFile = false}) {
+  List<String> getImportDirectives({
+    Uri uri,
+    String source,
+    Directory sourceDir,
+    bool alsoImportOriginalFile = false,
+  }) {
     if (uri != null && source != null) {
-      throw ArgumentError(
-          "either uri or source must be non-null, but not both");
+      throw ArgumentError("either uri or source must be non-null, but not both");
     }
 
     if (uri == null && source == null) {
-      throw ArgumentError(
-          "either uri or source must be non-null, but not both");
+      throw ArgumentError("either uri or source must be non-null, but not both");
     }
 
     if (alsoImportOriginalFile == true && uri == null) {
-      throw ArgumentError(
-          "flag 'alsoImportOriginalFile' may only be set if 'uri' is also set");
+      throw ArgumentError("flag 'alsoImportOriginalFile' may only be set if 'uri' is also set");
     }
 
     var fileUri = resolveUri(uri);
@@ -158,13 +147,20 @@ class BuildContext {
     final importRegex = RegExp("import [\\'\\\"]([^\\'\\\"]*)[\\'\\\"];");
 
     final imports = importRegex.allMatches(text).map((m) {
-      var importedUri = Uri.parse(m.group(1));
+      final import = m.group(1);
+      final importedUri = Uri.parse(import);
       if (importedUri.scheme != "package" && !importedUri.isAbsolute) {
-        throw ArgumentError(
-            "Cannot resolve relative URIs in file located at $uri. "
-            "Replace imported URIs with package or absolute URIs");
+        final file = File(
+          path.normalize(path.join(sourceDir == null ? import : '${sourceDir.absolute.path}$import')),
+        ).absolute;
+        if (!file.existsSync()) {
+          throw ArgumentError(
+            "Cannot resolve relative URI $importedUri in file $uri: "
+            "Replace imported URIs with package or absolute URIs",
+          );
+        }
+        return "import 'file:${file.path}';";
       }
-
       return text.substring(m.start, m.end);
     }).toList();
 
@@ -178,21 +174,18 @@ class BuildContext {
   ClassDeclaration getClassDeclarationFromType(Type type) {
     final classMirror = reflectType(type);
     return analyzer.getClassFromFile(
-        MirrorSystem.getName(classMirror.simpleName),
-        resolveUri(classMirror.location.sourceUri));
+        MirrorSystem.getName(classMirror.simpleName), resolveUri(classMirror.location.sourceUri));
   }
 
   List<Annotation> getAnnotationsFromField(Type _type, String propertyName) {
     var type = reflectClass(_type);
-    var field =
-        getClassDeclarationFromType(type.reflectedType).getField(propertyName);
+    var field = getClassDeclarationFromType(type.reflectedType).getField(propertyName);
     while (field == null) {
       type = type.superclass;
       if (type.reflectedType == Object) {
         break;
       }
-      field = getClassDeclarationFromType(type.reflectedType)
-          .getField(propertyName);
+      field = getClassDeclarationFromType(type.reflectedType).getField(propertyName);
     }
 
     return (field.parent.parent as FieldDeclaration).metadata.toList();
