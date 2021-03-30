@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:runtime/src/analyzer.dart';
+import 'package:runtime_2/src/analyzer.dart';
 import 'package:test/test.dart';
 
 import 'project_agent.dart';

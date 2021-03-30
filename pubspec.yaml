@@ -1,4 +1,4 @@
-name: runtime
+name: runtime_2
 description: Provides behaviors and base types for packages that can use mirrors and be AOT compiled.
 version: 1.0.0
 homepage: https://github.com/DISCOOS/dart-runtime-2

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:runtime/runtime.dart';
+import 'package:runtime_2/runtime_2.dart';
 import 'package:test/test.dart';
 
 void main() {

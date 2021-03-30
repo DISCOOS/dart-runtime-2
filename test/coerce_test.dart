@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:mirrors';
 
-import 'package:runtime/runtime.dart';
-import 'package:runtime/src/mirror_coerce.dart';
-import 'package:runtime/slow_coerce.dart';
+import 'package:runtime_2/runtime_2.dart';
+import 'package:runtime_2/src/mirror_coerce.dart';
+import 'package:runtime_2/slow_coerce.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -130,7 +130,6 @@ void main() {
         expect(x, [false, true]);
       });
 
-
       test("list of map", () {
         List<Map<String, dynamic>> x = coerce<List<Map<String, dynamic>>>(wash([
           {"a": "b"},
@@ -146,7 +145,6 @@ void main() {
         expect(coerce<List<Map<String, dynamic>>>(null), null);
         expect(coerce<List<Map<String, dynamic>>>([]), <Map<String, dynamic>>[]);
       });
-
     });
 
     group("($suiteName) List Types (cast error)", () {
@@ -204,8 +202,7 @@ void main() {
       });
 
       test("string->dynamic", () {
-        Map<String, dynamic> x =
-            coerce<Map<String, dynamic>>(wash({"a": 1, "b": "c"}));
+        Map<String, dynamic> x = coerce<Map<String, dynamic>>(wash({"a": 1, "b": "c"}));
         expect(x, {"a": 1, "b": "c"});
       });
 

@@ -4,10 +4,10 @@ import 'dart:mirrors';
 import 'package:path/path.dart' as path;
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
-import 'package:runtime/src/analyzer.dart';
-import 'package:runtime/src/context.dart';
-import 'package:runtime/src/file_system.dart';
-import 'package:runtime/src/mirror_context.dart';
+import 'package:runtime_2/src/analyzer.dart';
+import 'package:runtime_2/src/context.dart';
+import 'package:runtime_2/src/file_system.dart';
+import 'package:runtime_2/src/mirror_context.dart';
 import 'package:yaml/yaml.dart';
 
 /// Configuration and context values used during [Build.execute].

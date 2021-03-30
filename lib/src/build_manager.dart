@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:isolate_executor_2/isolate_executor_2.dart';
-import 'package:runtime/runtime.dart';
+import 'package:runtime_2/runtime_2.dart';
 
 import 'build_context.dart';
 
@@ -56,7 +56,7 @@ class BuildManager {
 
     await IsolateExecutor.run(BuildExecutable(context.safeMap),
         packageConfigURI: sourceDirectoryUri.resolve(".packages"),
-        imports: ["package:runtime/runtime.dart", context.targetScriptFileUri.toString()],
+        imports: ["package:runtime_2/runtime_2.dart", context.targetScriptFileUri.toString()],
         logHandler: (s) => print(s));
   }
 

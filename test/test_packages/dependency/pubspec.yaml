@@ -9,7 +9,7 @@ environment:
 publish_to: none
 
 dependencies:
-  runtime:
+  runtime_2:
     path: ../../..
 
 dev_dependencies:

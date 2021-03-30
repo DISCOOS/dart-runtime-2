@@ -1,6 +1,6 @@
 import 'dart:mirrors';
 
-import 'package:runtime/src/exceptions.dart';
+import 'package:runtime_2/src/exceptions.dart';
 
 dynamic runtimeCast(dynamic object, TypeMirror intoType) {
   final exceptionToThrow = TypeCoercionException(intoType.reflectedType, object.runtimeType);

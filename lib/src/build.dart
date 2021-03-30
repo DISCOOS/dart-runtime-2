@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:mirrors';
 
-import 'package:runtime/runtime.dart';
-import 'package:runtime/src/build_context.dart';
+import 'package:runtime_2/runtime_2.dart';
+import 'package:runtime_2/src/build_context.dart';
 
 class Build {
   Build(this.context);
@@ -27,8 +27,7 @@ class Build {
     final runtimeGenerator = RuntimeGenerator();
     context.context.runtimes.map.forEach((typeName, runtime) {
       if (runtime is SourceCompiler) {
-        runtimeGenerator.addRuntime(
-            name: typeName, source: runtime.compile(context));
+        runtimeGenerator.addRuntime(name: typeName, source: runtime.compile(context));
       }
     });
 
@@ -48,17 +47,14 @@ class Build {
     compilers.forEach((compiler) {
       final packageInfo = _getPackageInfoForCompiler(compiler);
       final sourceDirUri = packageInfo.uri;
-      final targetDirUri =
-          context.buildPackagesDirectory.uri.resolve("${packageInfo.name}/");
+      final targetDirUri = context.buildPackagesDirectory.uri.resolve("${packageInfo.name}/");
 
       print("Compiling package '${packageInfo.name}'...");
       copyPackage(sourceDirUri, targetDirUri);
       compiler.deflectPackage(Directory.fromUri(targetDirUri));
 
       if (packageInfo.name != nameOfPackageBeingCompiled) {
-        overrides[packageInfo.name] = {
-          "path": targetDirUri.toFilePath(windows: Platform.isWindows)
-        };
+        overrides[packageInfo.name] = {"path": targetDirUri.toFilePath(windows: Platform.isWindows)};
       } else {
         sourcePackageIsCompiled = true;
       }
@@ -67,15 +63,12 @@ class Build {
 
     final appDst = context.buildApplicationDirectory.uri;
     if (!sourcePackageIsCompiled) {
-      print(
-          "Copying application package (from '${context.sourceApplicationDirectory.uri}')...");
+      print("Copying application package (from '${context.sourceApplicationDirectory.uri}')...");
       copyPackage(context.sourceApplicationDirectory.uri, appDst);
       print("Application packaged copied to '${appDst}'.");
     }
     pubspecMap['dependencies'] = {
-      nameOfPackageBeingCompiled: {
-        "path": appDst.toFilePath(windows: Platform.isWindows)
-      }
+      nameOfPackageBeingCompiled: {"path": appDst.toFilePath(windows: Platform.isWindows)}
     };
 
     if (context.forTests) {
@@ -85,12 +78,9 @@ class Build {
       }
     }
 
-    File.fromUri(context.buildDirectoryUri.resolve("pubspec.yaml"))
-        .writeAsStringSync(json.encode(pubspecMap));
+    File.fromUri(context.buildDirectoryUri.resolve("pubspec.yaml")).writeAsStringSync(json.encode(pubspecMap));
 
-    context
-        .getFile(context.targetScriptFileUri)
-        .writeAsStringSync(context.source);
+    context.getFile(context.targetScriptFileUri).writeAsStringSync(context.source);
 
     context.context.compilers.forEach((compiler) {
       compiler.didFinishPackageGeneration(context);
@@ -111,40 +101,30 @@ class Build {
     final cmd = Platform.isWindows ? "pub.bat" : "pub";
 
     final res = await Process.run(cmd, ["get", "--offline", "--no-precompile"],
-        workingDirectory:
-            context.buildDirectoryUri.toFilePath(windows: Platform.isWindows),
-        runInShell: true);
+        workingDirectory: context.buildDirectoryUri.toFilePath(windows: Platform.isWindows), runInShell: true);
     if (res.exitCode != 0) {
       print("${res.stdout}");
       print("${res.stderr}");
-      throw StateError(
-          "'pub get' failed with the following message: ${res.stderr}");
+      throw StateError("'pub get' failed with the following message: ${res.stderr}");
     }
   }
 
   Future compile(Uri srcUri, Uri dstUri) async {
-    final res = await Process.run(
-        "dart2native",
-        [
-          "-v",
-          srcUri.toFilePath(windows: Platform.isWindows),
-          "-o",
-          dstUri.toFilePath(windows: Platform.isWindows)
-        ],
-        workingDirectory: context.buildApplicationDirectory.uri
-            .toFilePath(windows: Platform.isWindows),
+    final res = await Process.run("dart2native",
+        ["-v", srcUri.toFilePath(windows: Platform.isWindows), "-o", dstUri.toFilePath(windows: Platform.isWindows)],
+        workingDirectory: context.buildApplicationDirectory.uri.toFilePath(windows: Platform.isWindows),
         runInShell: true);
     if (res.exitCode != 0) {
-      throw StateError(
-          "'dart2native' failed with the following message: ${res.stderr}");
+      throw StateError("'dart2native' failed with the following message: ${res.stderr}");
     }
     print("${res.stdout}");
   }
 
   void copyPackage(Uri srcUri, Uri dstUri) {
     copyDirectory(src: srcUri.resolve("lib/"), dst: dstUri.resolve("lib/"));
-    context.getFile(srcUri.resolve("pubspec.yaml")).copySync(
-        dstUri.resolve("pubspec.yaml").toFilePath(windows: Platform.isWindows));
+    context
+        .getFile(srcUri.resolve("pubspec.yaml"))
+        .copySync(dstUri.resolve("pubspec.yaml").toFilePath(windows: Platform.isWindows));
   }
 
   _PackageInfo _getPackageInfoForName(String packageName) {
@@ -162,8 +142,7 @@ class Build {
     final parser = RegExp("package\:([^\/]+)");
     final parsed = parser.firstMatch(compilerUri.toString());
     if (parsed == null) {
-      throw StateError(
-          "Could not identify package of Compiler '${compiler.runtimeType}' (from URI '${compilerUri}').");
+      throw StateError("Could not identify package of Compiler '${compiler.runtimeType}' (from URI '${compilerUri}').");
     }
 
     final packageName = parsed.group(1);

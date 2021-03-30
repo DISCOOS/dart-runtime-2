@@ -1,8 +1,8 @@
 import 'dart:mirrors';
 
-import 'package:runtime/src/context.dart';
-import 'package:runtime/src/compiler.dart';
-import 'package:runtime/src/mirror_coerce.dart';
+import 'package:runtime_2/src/context.dart';
+import 'package:runtime_2/src/compiler.dart';
+import 'package:runtime_2/src/mirror_coerce.dart';
 
 RuntimeContext instance = MirrorContext._();
 
@@ -13,8 +13,7 @@ class MirrorContext extends RuntimeContext {
       final compiledRuntimes = c.compile(this);
       if (m.keys.any((k) => compiledRuntimes.keys.contains(k))) {
         final matching = m.keys.where((k) => compiledRuntimes.keys.contains(k));
-        throw StateError(
-            'Could not compile. Type conflict for the following types: ${matching.join(", ")}.');
+        throw StateError('Could not compile. Type conflict for the following types: ${matching.join(", ")}.');
       }
       m.addAll(compiledRuntimes);
     });
@@ -67,7 +66,5 @@ class MirrorContext extends RuntimeContext {
 
 T firstMetadataOfType<T>(DeclarationMirror dm, {TypeMirror dynamicType}) {
   final tMirror = dynamicType ?? reflectType(T);
-  return dm.metadata
-      .firstWhere((im) => im.type.isSubtypeOf(tMirror), orElse: () => null)
-      ?.reflectee as T;
+  return dm.metadata.firstWhere((im) => im.type.isSubtypeOf(tMirror), orElse: () => null)?.reflectee as T;
 }

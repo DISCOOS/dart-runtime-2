@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:mirrors';
 
 import 'package:dependency/dependency.dart';
-import 'package:runtime/runtime.dart';
+import 'package:runtime_2/runtime_2.dart';
 
 class DependencyCompiler extends Compiler {
   @override
