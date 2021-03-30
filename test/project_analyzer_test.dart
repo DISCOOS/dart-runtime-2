@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:runtime_2/src/analyzer.dart';
 import 'package:test/test.dart';
 
-import 'project_agent.dart';
+import '../lib/src/project_agent.dart';
 
 void main() {
   test("ProjectAnalyzer can find a specific class declaration in project", () async {

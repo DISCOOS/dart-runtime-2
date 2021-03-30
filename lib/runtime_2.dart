@@ -16,6 +16,7 @@ export 'src/build_manager.dart';
 export 'src/mirror_context.dart';
 export 'src/exceptions.dart';
 export 'src/mirror_coerce.dart';
+export 'src/project_agent.dart';
 
 /// Compiler for the runtime package itself.
 ///
