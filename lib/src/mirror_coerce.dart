@@ -3,8 +3,7 @@ import 'dart:mirrors';
 import 'package:runtime/src/exceptions.dart';
 
 dynamic runtimeCast(dynamic object, TypeMirror intoType) {
-  final exceptionToThrow =
-      TypeCoercionException(intoType.reflectedType, object.runtimeType as Type);
+  final exceptionToThrow = TypeCoercionException(intoType.reflectedType, object.runtimeType);
 
   try {
     final objectType = reflect(object).type;
@@ -25,8 +24,7 @@ dynamic runtimeCast(dynamic object, TypeMirror intoType) {
         throw exceptionToThrow;
       }
 
-      final output = (intoType as ClassMirror)
-          .newInstance(const Symbol(""), []).reflectee as Map<String, dynamic>;
+      final output = (intoType as ClassMirror).newInstance(const Symbol(""), []).reflectee as Map<String, dynamic>;
       final valueType = intoType.typeArguments.last;
       (object as Map<String, dynamic>).forEach((key, val) {
         output[key] = runtimeCast(val, valueType);
@@ -34,8 +32,6 @@ dynamic runtimeCast(dynamic object, TypeMirror intoType) {
       return output;
     }
   } on TypeError {
-    throw exceptionToThrow;
-  } on CastError {
     throw exceptionToThrow;
   } on TypeCoercionException {
     throw exceptionToThrow;
@@ -52,8 +48,7 @@ bool isTypeFullyPrimitive(TypeMirror type) {
   if (type.isSubtypeOf(reflectType(List))) {
     return isTypeFullyPrimitive(type.typeArguments.first);
   } else if (type.isSubtypeOf(reflectType(Map))) {
-    return isTypeFullyPrimitive(type.typeArguments.first) &&
-        isTypeFullyPrimitive(type.typeArguments.last);
+    return isTypeFullyPrimitive(type.typeArguments.first) && isTypeFullyPrimitive(type.typeArguments.last);
   }
 
   if (type.isSubtypeOf(reflectType(num))) {
