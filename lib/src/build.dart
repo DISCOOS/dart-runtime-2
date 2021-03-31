@@ -41,7 +41,7 @@ class Build {
       'environment': {'sdk': '>=2.7.0 <3.0.0'},
       'dependency_overrides': {}
     };
-    Map overrides = pubspecMap['dependency_overrides'];
+    Map overrides = pubspecMap['dependency_overrides'] as Map;
     var sourcePackageIsCompiled = false;
 
     compilers.forEach((compiler) {
