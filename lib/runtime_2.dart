@@ -2,8 +2,8 @@ library runtime_2;
 
 import 'dart:io';
 
-import 'package:runtime_2/src/compiler.dart';
-import 'package:runtime_2/src/mirror_context.dart';
+import 'src/compiler.dart';
+import 'src/mirror_context.dart';
 
 export 'src/analyzer.dart';
 export 'src/context.dart';
@@ -29,7 +29,16 @@ class RuntimePackageCompiler extends Compiler {
   @override
   void deflectPackage(Directory destinationDirectory) {
     final libraryFile = File.fromUri(destinationDirectory.uri.resolve("lib/").resolve("runtime_2.dart"));
-    libraryFile.writeAsStringSync("library runtime;\nexport 'src/context.dart';\nexport 'src/exceptions.dart';");
+    libraryFile.writeAsStringSync("""
+    
+library runtime_2;
+
+export 'src/analyzer.dart';
+export 'src/context.dart';
+export 'src/exceptions.dart';
+export 'src/project_agent.dart';
+
+""");
 
     final contextFile = File.fromUri(destinationDirectory.uri.resolve("lib/").resolve("src/").resolve("context.dart"));
     final contextFileContents = contextFile.readAsStringSync().replaceFirst(
