@@ -129,6 +129,8 @@ version: 0.0.1
 environment:
   sdk: ">=2.0.0 <3.0.0"
 
+publish_to: none
+
 dependencies:
 ${_asYaml(deps, indent: 1)}
 
