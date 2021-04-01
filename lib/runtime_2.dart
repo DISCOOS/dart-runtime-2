@@ -30,7 +30,7 @@ class RuntimePackageCompiler extends Compiler {
   void deflectPackage(Directory destinationDirectory) {
     final libraryFile = File.fromUri(destinationDirectory.uri.resolve("lib/").resolve("runtime_2.dart"));
     libraryFile.writeAsStringSync("""
-    
+
 library runtime_2;
 
 export 'src/analyzer.dart';

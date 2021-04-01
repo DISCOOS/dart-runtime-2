@@ -100,8 +100,12 @@ class Build {
   Future getDependencies() async {
     final cmd = Platform.isWindows ? "pub.bat" : "pub";
 
-    final res = await Process.run(cmd, ["get", "--offline", "--no-precompile"],
-        workingDirectory: context.buildDirectoryUri.toFilePath(windows: Platform.isWindows), runInShell: true);
+    final res = await Process.run(
+      cmd,
+      ["get", "--offline", "--no-precompile"],
+      workingDirectory: context.buildDirectoryUri.toFilePath(windows: Platform.isWindows),
+      runInShell: true,
+    );
     if (res.exitCode != 0) {
       print("${res.stdout}");
       print("${res.stderr}");

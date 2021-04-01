@@ -47,6 +47,11 @@ version: 1.0.0
 
 environment:
   sdk: '>=2.2.0 <3.0.0'  
+  
+runtime_2:
+  git:
+    url: https://github.com/DISCOOS/dart-runtime-2.git
+    ref: master
 """;
 
   String get _loaderShell => """
