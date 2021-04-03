@@ -12,8 +12,15 @@ import 'package:yaml/yaml.dart';
 
 /// Configuration and context values used during [Build.execute].
 class BuildContext {
-  BuildContext(this.rootLibraryFileUri, this.buildDirectoryUri, this.executableUri, this.source, {bool forTests})
-      : this.forTests = forTests ?? false {
+  BuildContext(
+    this.rootLibraryFileUri,
+    this.buildDirectoryUri,
+    this.executableUri,
+    this.source, {
+    bool offline,
+    bool forTests,
+  })  : this.offline = offline ?? true,
+        this.forTests = forTests ?? false {
     analyzer = CodeAnalyzer(sourceApplicationDirectory.uri);
   }
 
@@ -44,6 +51,9 @@ class BuildContext {
 
   /// The source script for the executable.
   final String source;
+
+  /// Whether use cached packages rather than downloading from the network.
+  final bool offline;
 
   /// Whether dev dependencies of the application package are included in the dependencies of the compiled executable.
   final bool forTests;

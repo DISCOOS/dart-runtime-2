@@ -13,7 +13,7 @@ class Build {
   Map<String, Uri> get packageMap => _packageMap ??= context.resolvedPackages;
   Map<String, Uri> _packageMap;
 
-  Future execute({bool offline = true}) async {
+  Future execute() async {
     final compilers = context.context.compilers;
 
     print("Resolving ASTs...");
@@ -86,7 +86,7 @@ class Build {
       compiler.didFinishPackageGeneration(context);
     });
 
-    await getDependencies(offline: offline);
+    await getDependencies();
     print("Finished fetching dependencies.");
 
     if (!context.forTests) {
@@ -96,12 +96,12 @@ class Build {
     }
   }
 
-  Future getDependencies({bool offline = true}) async {
-    print("Fetching dependencies (${offline ? "--offline " : ""}--no-precompile)...");
+  Future getDependencies() async {
+    print("Fetching dependencies (${context.offline ? "--offline " : ""}--no-precompile)...");
     final cmd = Platform.isWindows ? "pub.bat" : "pub";
     final res = await Process.run(
       cmd,
-      ["get", if (offline) "--offline", "--no-precompile"],
+      ["get", if (context.offline) "--offline", "--no-precompile"],
       workingDirectory: context.buildDirectoryUri.toFilePath(windows: Platform.isWindows),
       runInShell: true,
     );
