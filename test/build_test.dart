@@ -25,10 +25,14 @@ void main() {
     final appDir = Directory.current.uri.resolve("test/").resolve("test_packages/").resolve("application/");
     final appLib = appDir.resolve("lib/").resolve("application.dart");
     final tmp = Directory.current.uri.resolve("tmp/");
-    final ctx = BuildContext(appLib, tmp, tmp.resolve("app.aot"),
-        File.fromUri(appDir.resolve("bin/").resolve("main.dart")).readAsStringSync());
+    final ctx = BuildContext(
+      appLib,
+      tmp,
+      tmp.resolve("app.aot"),
+      File.fromUri(appDir.resolve("bin/").resolve("main.dart")).readAsStringSync(),
+    );
     final bm = BuildManager(ctx);
-    await bm.build();
+    return bm.build();
   });
 
   tearDownAll(() {
@@ -43,8 +47,11 @@ void main() {
   test("Compiled version of application returns source generated runtimes and can be AOT compiled", () async {
     final output = await runExecutable(Directory.current.uri.resolve("tmp/").resolve("app.aot"),
         Directory.current.uri.resolve("test/").resolve("test_packages/").resolve("application/"));
-    expect(
-        json.decode(output), {"Consumer": "generated", "ConsumerSubclass": "generated", "ConsumerScript": "generated"});
+    expect(json.decode(output), {
+      "Consumer": "generated",
+      "ConsumerSubclass": "generated",
+      "ConsumerScript": "generated",
+    });
   });
 }
 

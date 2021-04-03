@@ -54,10 +54,12 @@ class BuildManager {
 
     strippedScriptFile.writeAsStringSync(scriptSource);
 
-    await IsolateExecutor.run(BuildExecutable(context.safeMap),
-        packageConfigURI: sourceDirectoryUri.resolve(".packages"),
-        imports: ["package:runtime_2/runtime_2.dart", context.targetScriptFileUri.toString()],
-        logHandler: (s) => print(s));
+    return IsolateExecutor.run(
+      BuildExecutable(context.safeMap),
+      packageConfigURI: sourceDirectoryUri.resolve(".packages"),
+      imports: ["package:runtime_2/runtime_2.dart", context.targetScriptFileUri.toString()],
+      logHandler: (s) => print(s),
+    );
   }
 
   Future clean() async {
