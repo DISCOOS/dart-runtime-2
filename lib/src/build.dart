@@ -100,12 +100,25 @@ class Build {
   }
 
   Future getDependencies() async {
-    print("Fetching dependencies (${context.offline ? "--offline " : ""}--no-precompile)...");
+    for (var compiler in context.context.compilers) {
+      final packageInfo = _getPackageInfoForCompiler(compiler);
+      final targetDirUri = context.buildPackagesDirectory.uri.resolve("${packageInfo.name}/");
+      await _getDependencies(
+        targetDirUri.toFilePath(windows: Platform.isWindows),
+      );
+    }
+    await _getDependencies(
+      context.buildDirectoryUri.toFilePath(windows: Platform.isWindows),
+    );
+  }
+
+  Future _getDependencies(String path) async {
+    print("Fetching dependencies for $path (${context.offline ? "--offline " : ""}--no-precompile)...");
     final cmd = Platform.isWindows ? "pub.bat" : "pub";
     final res = await Process.run(
       cmd,
       ["get", if (context.offline) "--offline", "--no-precompile"],
-      workingDirectory: context.buildDirectoryUri.toFilePath(windows: Platform.isWindows),
+      workingDirectory: path,
       runInShell: true,
     );
     if (res.exitCode != 0) {
@@ -113,6 +126,7 @@ class Build {
       print("${res.stderr}");
       throw StateError("'pub get' failed with the following message: ${res.stderr}");
     }
+    return;
   }
 
   Future compile(Uri srcUri, Uri dstUri) async {
