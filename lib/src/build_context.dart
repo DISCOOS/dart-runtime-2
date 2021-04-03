@@ -25,9 +25,14 @@ class BuildContext {
   }
 
   factory BuildContext.fromMap(Map map) {
-    return BuildContext(Uri.parse(map['rootLibraryFileUri']), Uri.parse(map['buildDirectoryUri']),
-        Uri.parse(map['executableUri']), map['source'],
-        forTests: map['forTests']);
+    return BuildContext(
+      Uri.parse(map['rootLibraryFileUri']),
+      Uri.parse(map['buildDirectoryUri']),
+      Uri.parse(map['executableUri']),
+      map['source'],
+      offline: map['offline'],
+      forTests: map['forTests'],
+    );
   }
 
   Map<String, dynamic> get safeMap => {
@@ -35,6 +40,7 @@ class BuildContext {
         'buildDirectoryUri': buildDirectoryUri.toString(),
         'source': source,
         'executableUri': executableUri.toString(),
+        'offline': offline,
         'forTests': forTests
       };
 
