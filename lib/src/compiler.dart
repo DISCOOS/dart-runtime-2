@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:runtime_2/runtime_2.dart';
-import 'package:runtime_2/src/mirror_context.dart';
+import 'build_context.dart';
+import 'mirror_context.dart';
 
 abstract class Compiler {
   /// Modifies a package on the filesystem in order to remove dart:mirrors from the package.

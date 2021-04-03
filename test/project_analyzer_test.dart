@@ -14,8 +14,10 @@ void main() {
 
     var path = terminal.workingDirectory.absolute.uri;
     final p = CodeAnalyzer(path);
-    final klass =
-        p.getClassFromFile("ConsumerSubclass", terminal.libraryDirectory.absolute.uri.resolve("application.dart"));
+    final klass = p.getClassFromFile(
+      "ConsumerSubclass",
+      terminal.libraryDirectory.absolute.uri.resolve("application.dart"),
+    );
     expect(klass, isNotNull);
     expect(klass.name.name, "ConsumerSubclass");
     expect(klass.extendsClause.superclass.name.name, "Consumer");
